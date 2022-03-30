@@ -1,6 +1,8 @@
 package com.joc.todo.entity;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -11,7 +13,10 @@ import javax.persistence.Id;
 // Hibernate 가 기본적인 구현체다.
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Todo {
+
     @Id @GeneratedValue
     private Integer id;
     private String userId;
