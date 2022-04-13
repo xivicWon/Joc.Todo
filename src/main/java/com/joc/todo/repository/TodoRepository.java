@@ -1,6 +1,8 @@
 package com.joc.todo.repository;
 
 import com.joc.todo.entity.Todo;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,6 @@ public interface TodoRepository {
 
     void deleteById(Integer id);
 
-
+    void truncate();
 
 }
