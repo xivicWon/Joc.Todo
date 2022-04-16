@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 // JPA => Java의 표준 ORM 이다.
 // Hibernate 가 기본적인 구현체다.
@@ -12,14 +13,17 @@ import javax.persistence.Id;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 public class Todo {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Integer id;
     private String userId;
     private String title;
+    private LocalDateTime createAt;
     private boolean done;
 
     public Integer getId() {
