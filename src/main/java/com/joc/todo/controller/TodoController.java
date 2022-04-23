@@ -15,42 +15,69 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-
+@RequestMapping("/todo")
 public class TodoController {
 
     private static final String TEMP_USER_ID = "temp";
     private final TodoService todoService;
 
     // http method : GET POST PUT PATCH DELETE OPTIONS HEAD TRACE CONNECT
-    @GetMapping("/todo")
+    @GetMapping
     public ResponseEntity<List<TodoDto>> getTodoList() {
-        List<Todo> todoList = todoService.getList(TEMP_USER_ID);
+//        List<Todo> todoList = todoService.getList(TEMP_USER_ID);
 
         // 객체를 Json String 으로 변환 > HttpMessageCoverter (Serialize / Serializer)
         // Json String을 객체로 변환 > HttpMessageCoverter (Deserialize / Deserializer)
-        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoList));
+//        type 1
+//        List<TodoDto> todoDtos = new ArrayList<>();
+//        for (Todo todo : todoList) {
+//            TodoDto todoDto = TodoDto.builder()
+//                    .id(todo.getId())
+//                    .title(todo.getTitle())
+//                    .done(todo.isDone())
+//                    .build();
+//            todoDtos.add(todoDto);
+//        }
+
+//        type 2
+//        List<TodoDto> todoDtos = new ArrayList<>();
+//        for (Todo todo : todoList) {
+//            TodoDto todoDto = TodoDto.toDto(todo);
+//            todoDtos.add(todoDto);
+//        }
+
+//        type 3
+//        List<TodoDto> todoDtos = TodoDto.todoDtoList(todoList);
+//        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoList));
+
+        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
+
     }
 
-    @PostMapping("/todo")
+    // R&R -> Role & Responsibility ( 역할과 책임 )
+    @PostMapping
     public ResponseEntity<List<TodoDto>> createTodo(
-            @RequestBody Todo todo) {
-        log.info("MY_INFO > todo : {}", todo);
-        todo.setUserId(TEMP_USER_ID);
+            @RequestBody TodoDto todoDto) {
+
+        log.info("MY_INFO > todoDto : {}", todoDto);
+        Todo todo = Todo.from(todoDto);
         todoService.create(todo);
         return getTodoList();
     }
 
-    @PutMapping("/todo")
-    public ResponseEntity<List<TodoDto>> modifyTodo(Integer id, String title, Boolean done) {
-        Todo build = Todo.builder().userId(TEMP_USER_ID).id(id).title(title).done(done).build();
-        todoService.update(build);
+    @PutMapping
+    public ResponseEntity<List<TodoDto>> updateTodo(
+            @RequestBody TodoDto todoDto) {
+        todoService.update(Todo.from(todoDto));
         return getTodoList();
     }
 
-    @DeleteMapping("/todo")
-    public ResponseEntity<List<TodoDto>> removeTodo(Integer id) {
-        Todo build = Todo.builder().userId(TEMP_USER_ID).id(id).build();
-        todoService.delete(build);
+    @DeleteMapping
+    public ResponseEntity<List<TodoDto>> deleteTodo(
+            @RequestBody TodoDto todoDto) {
+        Todo todo = Todo.from(todoDto);
+//        Todo build = Todo.builder().id(todoDto.getId()).userId(TEMP_USER_ID).build();
+        todoService.delete(todo);
         return getTodoList();
     }
 }
