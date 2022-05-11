@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: "/service"
+    context-path: /service
 spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/h2/todo

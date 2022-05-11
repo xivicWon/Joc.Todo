@@ -5,6 +5,7 @@ import com.joc.todo.entity.Todo;
 import com.joc.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 // 스프링 3 계층  @Service @Controller @Repository
 
 @Slf4j
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/todo")
@@ -55,7 +57,9 @@ public class TodoController {
     }
 
     // R&R -> Role & Responsibility ( 역할과 책임 )
-    @PostMapping
+    @PostMapping(
+//            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TodoDto>> createTodo(
             @RequestBody TodoDto todoDto) {
 
@@ -64,6 +68,18 @@ public class TodoController {
         todoService.create(todo);
         return getTodoList();
     }
+
+    // R&R -> Role & Responsibility ( 역할과 책임 )
+    @PostMapping(
+            consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public String createTodo22(
+            @RequestBody String str) {
+
+        log.info("consumes, produces 테스트 >>>  {}", str);
+        return "createTodo22";
+    }
+
 
     @PutMapping
     public ResponseEntity<List<TodoDto>> updateTodo(
