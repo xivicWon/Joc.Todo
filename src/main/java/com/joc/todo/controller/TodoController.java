@@ -14,16 +14,18 @@ import java.util.List;
 // 스프링 3 계층  @Service @Controller @Repository
 
 @Slf4j
-@CrossOrigin("*")
+//@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/todo")
+//    @CrossOrigin(origins = "http://localhost:3000/", maxAge = 3600, methods = {RequestMethod.PUT, RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
 public class TodoController {
 
     private static final String TEMP_USER_ID = "temp";
     private final TodoService todoService;
 
     // http method : GET POST PUT PATCH DELETE OPTIONS HEAD TRACE CONNECT
+
     @GetMapping
     public ResponseEntity<List<TodoDto>> getTodoList() {
 //        List<Todo> todoList = todoService.getList(TEMP_USER_ID);
