@@ -15,12 +15,12 @@ import java.util.Optional;
 @Slf4j
 public class TodoJpaEmRepository implements TodoRepository {
 
-    private final EntityManager entityManager;
+    private final EntityManager em;
 
     @Override
     public List<Todo> findAll() {
         String jpql = "select t from Todo t ";
-        return entityManager.createQuery(jpql, Todo.class)
+        return em.createQuery(jpql, Todo.class)
                 .getResultList();
     }
 
@@ -28,7 +28,7 @@ public class TodoJpaEmRepository implements TodoRepository {
     public List<Todo> findByUserId(String userId) {
         log.info("DB에 flush를 하시요 (findByUserId)");
         String jpql = "select t from Todo t where t.userId = :userId";
-        return entityManager.createQuery(jpql, Todo.class)
+        return em.createQuery(jpql, Todo.class)
                 .setParameter("userId", userId)
                 .getResultList();
     }
@@ -37,19 +37,19 @@ public class TodoJpaEmRepository implements TodoRepository {
     public Optional<Todo> findById(Integer id) {
         log.info("DB를 flush 하시오 (findById)");
         String jpql = "select t from Todo t where t.id = :id";
-        try{
-            Todo resultTodo = entityManager.createQuery(jpql, Todo.class)
+        try {
+            Todo resultTodo = em.createQuery(jpql, Todo.class)
                     .setParameter("id", id)
                     .getSingleResult();
             return Optional.of(resultTodo);
-        } catch ( NoResultException ex){
+        } catch (NoResultException ex) {
             return Optional.empty();
         }
     }
 
     @Override
     public void save(Todo todo) {
-        entityManager.persist(todo);
+        em.persist(todo);
     }
 
     @Override
@@ -59,12 +59,12 @@ public class TodoJpaEmRepository implements TodoRepository {
 
     @Override
     public void deleteById(Integer id) {
-        findById(id).ifPresent(entityManager::remove);
+        findById(id).ifPresent(em::remove);
     }
 
     @Override
     public void truncate() {
         String jpql = "truncate table Todo";
-        entityManager.createQuery(jpql, Todo.class).executeUpdate();
+        em.createQuery(jpql, Todo.class).executeUpdate();
     }
 }
