@@ -24,25 +24,25 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
 
-    public List<Todo> getList(String userId){
+    public List<Todo> getList(String userId) {
         return todoRepository.findByUserId(userId);
     }
 
     @Transactional
-    public void create( Todo todo ){
-        log.debug(">>> todo : {}" , todo);
+    public void create(Todo todo) {
+        log.debug(">>> todo : {}", todo);
         validateTodo(todo);
         todoRepository.save(todo);
-        log.info("Todo가 등록되었습니다. {}" , todo.getId());
+        log.info("Todo가 등록되었습니다. {}", todo.getId());
     }
 
     private void validateTodo(Todo todo) {
-        if( todo == null) {
+        if (todo == null) {
             String msg = "Todo is null";
             log.error(msg);
             throw new ApplicationException(msg);
         }
-        if( todo.getUserId() == null ){
+        if (todo.getUserId() == null) {
             String msg2 = "Userid is not setting in Todo";
             log.error(msg2);
             throw new ApplicationException(msg2);
@@ -50,27 +50,27 @@ public class TodoService {
     }
 
     @Transactional
-    public void update( Todo newTodo){
+    public void update(Todo newTodo) {
         validateTodo(newTodo);
         Optional<Todo> oldTodo = todoRepository.findById(newTodo.getId());
-        log.debug(">>> newTodo : {}" , newTodo);
-        log.debug(">>> oldTodo : {}" , oldTodo);
+        log.debug(">>> newTodo : {}", newTodo);
+        log.debug(">>> oldTodo : {}", oldTodo);
         oldTodo.ifPresentOrElse(
-            todo-> {
-                todo.setTitle(newTodo.getTitle());
-                todo.setDone(newTodo.isDone());
-                todoRepository.save(todo);
-                log.info("Todo가 수정되었습니다. {}" , todo.getId());
-            },
-            () -> log.warn("수정할 Todo가 없습니다. {}" , newTodo.getId())
+                todo -> {
+                    todo.setTitle(newTodo.getTitle());
+                    todo.setDone(newTodo.isDone());
+                    todoRepository.save(todo);
+                    log.info("Todo가 수정되었습니다. {}", todo.getId());
+                },
+                () -> log.warn("수정할 Todo가 없습니다. {}", newTodo.getId())
         );
     }
 
     @Transactional
     public void delete(Todo todo) {
-        log.debug(">>> todo : {}" , todo);
+        log.debug(">>> todo : {}", todo);
         validateTodo(todo);
         todoRepository.delete(todo);
-        log.info("Todo가 삭제되었습니다. {}" , todo.getId());
+        log.info("Todo가 삭제되었습니다. {}", todo.getId());
     }
 }
