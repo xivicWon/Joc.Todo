@@ -53,7 +53,6 @@ public class TodoController {
 //        type 3
 //        List<TodoDto> todoDtos = TodoDto.todoDtoList(todoList);
 //        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoList));
-
         return ResponseEntity.ok().body(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
 
     }
