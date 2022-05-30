@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController // Controller ResponseBody
@@ -25,7 +22,8 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDto> signUp(
-            @RequestBody UserDto userDto        // MappingJackson2HttpMessageConverter : 객체생성(디폴트생성자) -> Setter
+            @RequestBody UserDto userDto        // MappingJackson2HttpMessageConverter : 객체생성(디폴트생성자) ->
+            // Setter(x) => (getter/setter 매서드를 이용해 프로퍼티를 찾아서  Reflection )
     ) {
         log.info("user Dto >> {} ", userDto);
 
@@ -50,6 +48,11 @@ public class UserController {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> exceptionHandler(Exception e) {
+        return ResponseEntity.internalServerError().body("ERROR");
     }
 
 
