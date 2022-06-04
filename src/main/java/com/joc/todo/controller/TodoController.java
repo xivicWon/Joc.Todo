@@ -1,12 +1,13 @@
 package com.joc.todo.controller;
 
 import com.joc.todo.dto.TodoDto;
+import com.joc.todo.dto.response.ResponseDto;
+import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.entity.Todo;
 import com.joc.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,13 @@ public class TodoController {
     // http method : GET POST PUT PATCH DELETE OPTIONS HEAD TRACE CONNECT
 
     @GetMapping
-    public ResponseEntity<List<TodoDto>> getTodoList() {
+    public ResponseDto<List<TodoDto>> getTodoList() {
+
+        ResponseResultDto<List<TodoDto>> responseResultDto = ResponseResultDto.of(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
+        return ResponseDto.of(responseResultDto);
+
+//        return ResponseDto.of(ResponseResultDto.of(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)), 1));
+
 //        List<Todo> todoList = todoService.getList(TEMP_USER_ID);
 
         // 객체를 Json String 으로 변환 > HttpMessageCoverter (Serialize / Serializer)
@@ -53,7 +60,7 @@ public class TodoController {
 //        type 3
 //        List<TodoDto> todoDtos = TodoDto.todoDtoList(todoList);
 //        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoList));
-        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
+//        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
 
     }
 
@@ -61,7 +68,7 @@ public class TodoController {
     @PostMapping(
 //            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TodoDto>> createTodo(
+    public ResponseDto<List<TodoDto>> createTodo(
             @RequestBody TodoDto todoDto) {
 
         log.info("MY_INFO > todoDto : {}", todoDto);
@@ -83,14 +90,14 @@ public class TodoController {
 
 
     @PutMapping
-    public ResponseEntity<List<TodoDto>> updateTodo(
+    public ResponseDto<List<TodoDto>> updateTodo(
             @RequestBody TodoDto todoDto) {
         todoService.update(Todo.from(todoDto));
         return getTodoList();
     }
 
     @DeleteMapping
-    public ResponseEntity<List<TodoDto>> deleteTodo(
+    public ResponseDto<List<TodoDto>> deleteTodo(
             @RequestBody TodoDto todoDto) {
         Todo todo = Todo.from(todoDto);
 //        Todo build = Todo.builder().id(todoDto.getId()).userId(TEMP_USER_ID).build();

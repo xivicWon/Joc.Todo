@@ -2,6 +2,7 @@ package com.joc.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joc.todo.dto.UserDto;
+import com.joc.todo.entity.User;
 import com.joc.todo.exception.ApplicationException;
 import com.joc.todo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -95,6 +95,41 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError());
 
+        // handler : UserController
+    }
+
+    @Test
+    void login_success() throws Exception {
+        // Given
+        String urlTemplate = "/auth/login";
+        UserDto userDto = UserDto.builder()
+                .email("xivic@kakao.com")
+                .password("pass")
+                .build();
+
+        String content = objectMapper.writeValueAsString(userDto);
+
+        // Method Mocking
+        doReturn(
+                User.builder()
+                        .id("test_id")
+                        .email(userDto.getEmail())
+                        .username(userDto.getUsername())
+                        .build()
+        ).when(userService)
+                .logIn(anyString(), any());
+        doThrow(new ApplicationException("ex message")).when(userService).signUp(any());
+
+        // When && Then
+        MvcResult mvcResult = mvc.perform(
+                        post(urlTemplate).content(content)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        log.debug("{}", contentAsString);
         // handler : UserController
     }
 }
