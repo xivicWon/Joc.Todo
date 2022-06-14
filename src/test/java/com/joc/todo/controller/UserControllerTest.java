@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joc.todo.dto.UserDto;
 import com.joc.todo.entity.User;
 import com.joc.todo.exception.ApplicationException;
+import com.joc.todo.mapper.UserMapper;
 import com.joc.todo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@WebMvcTest(UserController.class)
+@WebMvcTest({UserController.class, UserMapper.class})
 class UserControllerTest {
 
     @Autowired

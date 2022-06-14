@@ -2,6 +2,7 @@ package com.joc.todo.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 @Table(name = "member")
 @Builder
 @Getter
+@ToString
 public class User {
 
     // JPA 와 hibernate
@@ -21,7 +23,6 @@ public class User {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
-
     private String username;
     private String email;
     private String password;
