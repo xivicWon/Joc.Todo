@@ -30,7 +30,6 @@ public class ResponseDto<T> {
 //    public static <T> ResponseDto<T> of(T res) {
 //        return new ResponseDto<>(SUCCESS_CODE, SUCCESS_MESSAGE, res);
 //    }
-
     public static <T> ResponseDto<T> of(ResponseResultDto<T> result) {
         return new ResponseDto<>(SUCCESS_CODE, SUCCESS_MESSAGE, result);
     }
