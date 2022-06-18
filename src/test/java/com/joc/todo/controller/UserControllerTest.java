@@ -94,7 +94,7 @@ class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
 
         // handler : UserController
     }
