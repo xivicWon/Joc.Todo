@@ -1,94 +1,146 @@
 package com.joc.todo.controller;
 
-import com.joc.todo.dto.TodoDto;
-import com.joc.todo.entity.Todo;
-import com.joc.todo.repository.TodoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joc.todo.dto.TodoCreateDto;
+import com.joc.todo.dto.TodoDeleteDto;
+import com.joc.todo.dto.TodoUpdateDto;
+import com.joc.todo.mapper.TodoMapper;
 import com.joc.todo.service.TodoService;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Optional;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest
-@Transactional
+@WebMvcTest({TodoController.class, TodoMapper.class})
 class TodoControllerTest {
 
-    private static final String TEMP_USER_ID = "temp";
-    @Autowired
-    private TodoService todoService;
 
     @Autowired
-    private TodoRepository todoRepository;
-
-    Todo createTodo(String title) {
-        return Todo.builder()
-                .userId(TEMP_USER_ID)
-                .title(title)
-                .done(false)
-                .build();
-    }
-
-    @Test
-    @DisplayName("Todo 등록 후 목록 조회")
-    void getTodoList() {
-        //given
-        todoService.create(createTodo("타이틀1"));
-        todoService.create(createTodo("타이틀2"));
-        todoService.create(createTodo("타이틀3"));
-
-        //when
-        List<Todo> list = todoService.getList(TEMP_USER_ID);
-        List<TodoDto> todoDtos = TodoDto.todoDtoList(list);
-
-        //then
-        Assertions.assertThat(todoDtos).hasSize(3);
-    }
+    MockMvc mvc;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    TodoMapper todoMapper;
+    @MockBean
+    TodoService todoService;
 
 
     @Test
-    @DisplayName("Todo 등록")
-    void createTodo() {
-        //given
-        Todo todo = createTodo("타이틀");
-        log.info("show Todos Id : {}", todo.getId());
-        //when
-        todoService.create(todo);
-        //then`
-        Assertions.assertThat(todo.getId()).isNotNull();
+    void createTodo() throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoCreateDto dto = new TodoCreateDto("스프링 공부하기");
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
+
+        // When && Then
+        mvc.perform(
+                        post(urlTemplate).content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isOk());
     }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\t"})
+    void createTodoValidError(String title) throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoCreateDto dto = new TodoCreateDto(title);
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
+
+        // When && Then
+        mvc.perform(
+                        post(urlTemplate).content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
-    @DisplayName("Todo 수정")
-    void updateTodo() {
-        //given
-        Todo todo = createTodo("타이틀3");
-        todoService.create(todo);
-        todo.setDone(true);
-        //when
-        todoService.update(todo);
-        //then`
-        Assertions.assertThat(todo.isDone()).isTrue();
+    void updateTodo() throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoUpdateDto dto = new TodoUpdateDto(1, "스프링 공부하기", true);
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
+
+        // When && Then
+        mvc.perform(
+                        put(urlTemplate)
+                                .content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isOk());
     }
+
+
+    @ParameterizedTest
+    @CsvSource(value = {":자바:false", "1::false", "::true"}, delimiter = ':')
+    void updateTodoValidError(Integer Id, String title, boolean done) throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoUpdateDto dto = new TodoUpdateDto(Id, title, done);
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
+
+        // When && Then
+        mvc.perform(
+                        put(urlTemplate).content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
-    @DisplayName("Todo 삭제")
-    void deleteTodo() {
-        //given
-        Todo todo = createTodo("타이틀");
-        todoService.create(todo);
-        //when
-        todoService.delete(todo);
-        Optional<Todo> findTodo = todoRepository.findById(todo.getId());
+    void deleteTodo() throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoDeleteDto dto = new TodoDeleteDto(1);
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
-        //then`
-        Assertions.assertThat(findTodo).isNotPresent();
-
+        // When && Then
+        mvc.perform(
+                        delete(urlTemplate).content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isOk());
     }
+
+    @ParameterizedTest
+    @NullSource
+    void deleteTodoValidError(Integer Id) throws Exception {
+        // Given
+        String urlTemplate = "/todo";
+        TodoDeleteDto dto = new TodoDeleteDto(Id);
+        String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
+
+        // When && Then
+        mvc.perform(
+                        delete(urlTemplate).content(body)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print()) //상세내역 로그에 출력
+                .andExpect(status().isBadRequest());
+    }
+
+
 }

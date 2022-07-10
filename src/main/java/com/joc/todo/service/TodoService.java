@@ -30,7 +30,7 @@ public class TodoService {
 
     @Transactional
     public void create(Todo todo) {
-        log.debug(">>> todo : {}", todo);
+        log.debug(">>> todo : {}", todo);///.=]
         validateTodo(todo);
         todoRepository.save(todo);
         log.info("Todo가 등록되었습니다. {}", todo.getId());

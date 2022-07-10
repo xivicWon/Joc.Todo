@@ -1,6 +1,9 @@
 package com.joc.todo.controller;
 
+import com.joc.todo.dto.TodoCreateDto;
+import com.joc.todo.dto.TodoDeleteDto;
 import com.joc.todo.dto.TodoDto;
+import com.joc.todo.dto.TodoUpdateDto;
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.entity.Todo;
@@ -11,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 // 스프링 3 계층  @Service @Controller @Repository
@@ -75,18 +79,16 @@ public class TodoController {
 //            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseDto<List<TodoDto>> createTodo(
-            @RequestBody TodoDto todoDto) {
+            @RequestBody @Valid TodoCreateDto todoDto) {
 
         log.info("MY_INFO > todoDto : {}", todoDto);
-//        Todo todo = Todo.from(todoDto);
 
         Todo todo = todoMapper.toEntity(todoDto);
-        // 임시~~~
         todo.setUserId(TEMP_USER_ID);
         todoService.create(todo);
-//        todoService.create(todo);
         return getTodoList();
     }
+
 
     // R&R -> Role & Responsibility ( 역할과 책임 )
     @PostMapping(
@@ -102,8 +104,7 @@ public class TodoController {
 
     @PutMapping
     public ResponseDto<List<TodoDto>> updateTodo(
-            @RequestBody TodoDto todoDto) {
-//        todoService.update(Todo.from(todoDto));
+            @RequestBody @Valid TodoUpdateDto todoDto) {
         Todo newTodo = todoMapper.toEntity(todoDto);
         newTodo.setUserId(TEMP_USER_ID);
         todoService.update(newTodo);
@@ -112,7 +113,7 @@ public class TodoController {
 
     @DeleteMapping
     public ResponseDto<List<TodoDto>> deleteTodo(
-            @RequestBody TodoDto todoDto) {
+            @RequestBody @Valid TodoDeleteDto todoDto) {
 //        Todo todo = Todo.from(todoDto);
 //        Todo build = Todo.builder().id(todoDto.getId()).userId(TEMP_USER_ID).build();
 //        todoService.delete(todo);

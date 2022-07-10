@@ -47,14 +47,10 @@ public class UserController {
 
     }
 
-    @ExceptionHandler()
-    public ResponseEntity<?> exceptionHandler(Exception e) {
-        return ResponseDto.responseEntityOf(ResponseCode.BAD_REQUEST);
-    }
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<?> applicationExceptionHandler(ApplicationException e) {
-//        return ResponseEntity.badRequest().body(e.getMessage());
+
         return ResponseDto.responseEntityOf(ResponseCode.BAD_REQUEST, e.getMessage());
     }
 
@@ -68,11 +64,6 @@ public class UserController {
         User user = userService.logIn(email, password);
 
         var responseUserDto = userMapper.toDto(user);
-//        var responseUserDto = UserDto.builder()
-//                .id(user.getId())
-//                .email(user.getEmail())
-//                .username(user.getUsername())
-//                .build();
 
         // 타입 추론( Type Inference )
         ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(responseUserDto);
