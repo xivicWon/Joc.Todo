@@ -1,9 +1,7 @@
 package com.joc.todo.controller;
 
-import com.joc.todo.dto.TodoCreateDto;
-import com.joc.todo.dto.TodoDeleteDto;
+import com.joc.todo.controller.validation.marker.TodoValidationGroup;
 import com.joc.todo.dto.TodoDto;
-import com.joc.todo.dto.TodoUpdateDto;
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.entity.Todo;
@@ -12,9 +10,9 @@ import com.joc.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 // 스프링 3 계층  @Service @Controller @Repository
@@ -34,52 +32,18 @@ public class TodoController {
 
     @GetMapping
     public ResponseDto<List<TodoDto>> getTodoList() {
-
-//        ResponseResultDto<List<TodoDto>> responseResultDto = ResponseResultDto.of(
-//                TodoDto.todoDtoList(
-//                        todoService.getList(TEMP_USER_ID)
-//                )
-//        );
         ResponseResultDto<List<TodoDto>> responseResultDto = ResponseResultDto.of(
                 todoMapper.toDtoList(todoService.getList(TEMP_USER_ID))
         );
         return ResponseDto.of(responseResultDto);
 
-//        return ResponseDto.of(ResponseResultDto.of(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)), 1));
-//        List<Todo> todoList = todoService.getList(TEMP_USER_ID);
-        // 객체를 Json String 으로 변환 > HttpMessageCoverter (Serialize / Serializer)
-        // Json String을 객체로 변환 > HttpMessageCoverter (Deserialize / Deserializer)
-//        type 1
-//        List<TodoDto> todoDtos = new ArrayList<>();
-//        for (Todo todo : todoList) {
-//            TodoDto todoDto = TodoDto.builder()
-//                    .id(todo.getId())
-//                    .title(todo.getTitle())
-//                    .done(todo.isDone())
-//                    .build();
-//            todoDtos.add(todoDto);
-//        }
-
-//        type 2
-//        List<TodoDto> todoDtos = new ArrayList<>();
-//        for (Todo todo : todoList) {
-//            TodoDto todoDto = TodoDto.toDto(todo);
-//            todoDtos.add(todoDto);
-//        }
-
-//        type 3
-//        List<TodoDto> todoDtos = TodoDto.todoDtoList(todoList);
-//        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoList));
-//        return ResponseEntity.ok().body(TodoDto.todoDtoList(todoService.getList(TEMP_USER_ID)));
-
     }
 
     // R&R -> Role & Responsibility ( 역할과 책임 )
     @PostMapping(
-//            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseDto<List<TodoDto>> createTodo(
-            @RequestBody @Valid TodoCreateDto todoDto) {
+            @RequestBody @Validated({TodoValidationGroup.Creation.class}) TodoDto todoDto) {
 
         log.info("MY_INFO > todoDto : {}", todoDto);
 
@@ -104,7 +68,7 @@ public class TodoController {
 
     @PutMapping
     public ResponseDto<List<TodoDto>> updateTodo(
-            @RequestBody @Valid TodoUpdateDto todoDto) {
+            @RequestBody @Validated({TodoValidationGroup.Update.class}) TodoDto todoDto) {
         Todo newTodo = todoMapper.toEntity(todoDto);
         newTodo.setUserId(TEMP_USER_ID);
         todoService.update(newTodo);
@@ -113,10 +77,7 @@ public class TodoController {
 
     @DeleteMapping
     public ResponseDto<List<TodoDto>> deleteTodo(
-            @RequestBody @Valid TodoDeleteDto todoDto) {
-//        Todo todo = Todo.from(todoDto);
-//        Todo build = Todo.builder().id(todoDto.getId()).userId(TEMP_USER_ID).build();
-//        todoService.delete(todo);
+            @RequestBody @Validated({TodoValidationGroup.Deletion.class}) TodoDto todoDto) {
         Todo todo = todoMapper.toEntity(todoDto);
         todo.setUserId(TEMP_USER_ID);
         todoService.delete(todo);

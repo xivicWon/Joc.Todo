@@ -6,15 +6,15 @@ import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.dto.response.ResponseResultPageDto;
 import com.joc.todo.entity.User;
-import com.joc.todo.exception.ApplicationException;
 import com.joc.todo.mapper.UserMapper;
 import com.joc.todo.service.UserService;
-import com.joc.todo.type.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController // Controller ResponseBody
@@ -45,13 +45,6 @@ public class UserController {
         );
         return ResponseDto.of(responseResultDto);
 
-    }
-
-
-    @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<?> applicationExceptionHandler(ApplicationException e) {
-
-        return ResponseDto.responseEntityOf(ResponseCode.BAD_REQUEST, e.getMessage());
     }
 
     @PostMapping("/login")

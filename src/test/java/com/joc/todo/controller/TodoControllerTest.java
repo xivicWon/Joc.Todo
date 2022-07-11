@@ -1,12 +1,12 @@
 package com.joc.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joc.todo.dto.TodoCreateDto;
-import com.joc.todo.dto.TodoDeleteDto;
-import com.joc.todo.dto.TodoUpdateDto;
+import com.joc.todo.dto.TodoDto;
 import com.joc.todo.mapper.TodoMapper;
 import com.joc.todo.service.TodoService;
+import com.joc.todo.type.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -42,7 +43,7 @@ class TodoControllerTest {
     void createTodo() throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoCreateDto dto = new TodoCreateDto("스프링 공부하기");
+        TodoDto dto = TodoDto.builder().title("스프링 공부하기").build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -51,7 +52,8 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.SUCCESS.code())));
     }
 
     @ParameterizedTest
@@ -60,7 +62,7 @@ class TodoControllerTest {
     void createTodoValidError(String title) throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoCreateDto dto = new TodoCreateDto(title);
+        TodoDto dto = TodoDto.builder().title(title).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -69,7 +71,8 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.BAD_REQUEST.code())));
     }
 
 
@@ -77,7 +80,7 @@ class TodoControllerTest {
     void updateTodo() throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoUpdateDto dto = new TodoUpdateDto(1, "스프링 공부하기", true);
+        TodoDto dto = TodoDto.builder().id(1).title("스프링 공부하기").done(true).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -87,7 +90,9 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.SUCCESS.code())));
+        ;
     }
 
 
@@ -96,7 +101,8 @@ class TodoControllerTest {
     void updateTodoValidError(Integer Id, String title, boolean done) throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoUpdateDto dto = new TodoUpdateDto(Id, title, done);
+
+        TodoDto dto = TodoDto.builder().id(Id).title(title).done(done).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -105,7 +111,8 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.BAD_REQUEST.code())));
     }
 
 
@@ -113,7 +120,7 @@ class TodoControllerTest {
     void deleteTodo() throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoDeleteDto dto = new TodoDeleteDto(1);
+        TodoDto dto = TodoDto.builder().id(1).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -122,7 +129,8 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.SUCCESS.code())));
     }
 
     @ParameterizedTest
@@ -130,7 +138,7 @@ class TodoControllerTest {
     void deleteTodoValidError(Integer Id) throws Exception {
         // Given
         String urlTemplate = "/todo";
-        TodoDeleteDto dto = new TodoDeleteDto(Id);
+        TodoDto dto = TodoDto.builder().id(Id).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
         // When && Then
@@ -139,7 +147,8 @@ class TodoControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print()) //상세내역 로그에 출력
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code", Matchers.containsString(ResponseCode.BAD_REQUEST.code())));
     }
 
 

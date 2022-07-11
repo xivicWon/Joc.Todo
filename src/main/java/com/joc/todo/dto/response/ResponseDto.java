@@ -30,8 +30,9 @@ public class ResponseDto<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ResponseResultDto<T> result; // 연관관계( Association ) => 집약관계 ( aggregation )
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
 
-    private List<String> errors;
+    private List<ResponseErrorDto> errors;
 
     private ResponseDto(String code, String message, ResponseResultDto<T> result) {
         this.code = code;
@@ -44,16 +45,18 @@ public class ResponseDto<T> {
         this.message = message;
     }
 
-    public ResponseDto(String code, String message, String errors) {
+    public ResponseDto(String code, String message, ResponseErrorDto error) {
         this.code = code;
         this.message = message;
-        this.addError(errors);
+        this.addError(error);
     }
 
-    // 정적 팩토리 메서드의 명명 방식 관례 ( from, of, valueOf, getInstance, instance, create, newInstance, getType,
-    //    public static <T> ResponseDto<T> of(T res) {
-    //        return new ResponseDto<>(SUCCESS_CODE, SUCCESS_MESSAGE, res);
-    //    }
+    public ResponseDto(String code, String message, List<ResponseErrorDto> errors) {
+        this.code = code;
+        this.message = message;
+        this.errors = errors;
+    }
+
     public static <T> ResponseDto<T> of(ResponseResultDto<T> result) {
         return new ResponseDto<>(ResponseCode.SUCCESS.code(), ResponseCode.SUCCESS.getMessage(), result);
     }
@@ -82,11 +85,19 @@ public class ResponseDto<T> {
                 );
     }
 
-    public static <T> ResponseEntity<ResponseDto<T>> responseEntityOf(ResponseCode responseCode, String message) {
+    public static <T> ResponseEntity<ResponseDto<T>> responseEntityOf(ResponseCode responseCode, ResponseErrorDto message) {
         return ResponseEntity
                 .status(responseCode.getHttpStatus())
                 .body(
                         new ResponseDto<>(responseCode.code(), responseCode.getMessage(), message)
+                );
+    }
+
+    public static <T> ResponseEntity<ResponseDto<T>> responseEntityOf(ResponseCode responseCode, List<ResponseErrorDto> errors) {
+        return ResponseEntity
+                .status(responseCode.getHttpStatus())
+                .body(
+                        new ResponseDto<>(responseCode.code(), responseCode.getMessage(), errors)
                 );
     }
 
@@ -95,10 +106,10 @@ public class ResponseDto<T> {
     }
 
 
-    public void addError(String message) {
+    public void addError(ResponseErrorDto error) {
         if (this.errors == null) {
             this.errors = new ArrayList<>();
         }
-        this.errors.add(message);
+        this.errors.add(error);
     }
 }
