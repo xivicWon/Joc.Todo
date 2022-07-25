@@ -2,6 +2,7 @@ package com.joc.todo.service;
 
 import com.joc.todo.entity.User;
 import com.joc.todo.exception.ApplicationException;
+import com.joc.todo.exception.LoginFailException;
 import com.joc.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,9 @@ public class UserService {
             log.error("Password is Null or Blank {}", password);
             throw new ApplicationException("Password is Null or Blank");
         }
-        
+
         Optional<User> user = userRepository.findByEmailAndPassword(email, password);
-        return user.orElse(null);
+        return user.orElseThrow(() -> new LoginFailException("아이디 또는 패스워드가 잘못되었습니다."));
     }
 }
 

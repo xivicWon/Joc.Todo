@@ -8,6 +8,7 @@ import com.joc.todo.dto.response.ResponseResultPageDto;
 import com.joc.todo.entity.User;
 import com.joc.todo.mapper.UserMapper;
 import com.joc.todo.service.UserService;
+import com.joc.todo.type.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -55,11 +56,17 @@ public class UserController {
         String email = userDto.getEmail();
         String password = userDto.getPassword();
         User user = userService.logIn(email, password);
+//        ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(userMapper.toDto(user));
+        return ResponseDto.of(ResponseCode.SUCCESS);
 
-        var responseUserDto = userMapper.toDto(user);
+//        try {
+//            User user = userService.logIn(email, password);
+//            ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(userMapper.toDto(user));
+//            return ResponseDto.of(responseResultDto);
+//        } catch (LoginFailException e) {
+//            return ResponseDto.of(ResponseCode.UNAUTHORIZED);
+//        }
 
         // 타입 추론( Type Inference )
-        ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(responseUserDto);
-        return ResponseDto.of(responseResultDto);
     }
 }

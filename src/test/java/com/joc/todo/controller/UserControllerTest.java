@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joc.todo.dto.UserDto;
 import com.joc.todo.entity.User;
 import com.joc.todo.exception.ApplicationException;
+import com.joc.todo.exception.LoginFailException;
 import com.joc.todo.mapper.UserMapper;
 import com.joc.todo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -132,5 +133,28 @@ class UserControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         log.debug("{}", contentAsString);
         // handler : UserController
+    }
+
+
+    @Test
+    void login_fail() throws Exception {
+
+        // Given
+        String url = "/auth/login";
+        UserDto userDto = UserDto.builder()
+                .email("xivic@kakao.com")
+                .password("aaaaaaaaaaaaaa")
+                .build();
+        String body = objectMapper.writeValueAsString(userDto);
+
+
+        doThrow(new LoginFailException("아이디 또는 패스워드가 잘못되었습니다."))
+                .when(userService)
+                .logIn(anyString(), anyString());
+
+
+        mvc.perform(post(url).content(body).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

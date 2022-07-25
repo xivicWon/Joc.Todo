@@ -1,8 +1,6 @@
 package com.joc.todo.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -15,11 +13,12 @@ import javax.persistence.Table;
 @Builder
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA spec
+@AllArgsConstructor(access = AccessLevel.PRIVATE)   // Builder
 public class User {
 
     // JPA 와 hibernate
     @Id
-
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
