@@ -12,10 +12,10 @@ import com.joc.todo.type.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RestController // Controller ResponseBody
@@ -50,23 +50,28 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseDto<UserDto> logIn(
-            @RequestBody UserDto userDto
+            @RequestBody UserDto userDto,
+            HttpServletResponse response
     ) {
         log.debug(">>> login >>  {}  ", userDto);
         String email = userDto.getEmail();
         String password = userDto.getPassword();
         User user = userService.logIn(email, password);
-//        ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(userMapper.toDto(user));
+        Cookie userId = new Cookie("userId", user.getId());
+        userId.setPath("/");
+        response.addCookie(userId);
+
         return ResponseDto.of(ResponseCode.SUCCESS);
+    }
 
-//        try {
-//            User user = userService.logIn(email, password);
-//            ResponseResultDto<UserDto> responseResultDto = ResponseResultDto.of(userMapper.toDto(user));
-//            return ResponseDto.of(responseResultDto);
-//        } catch (LoginFailException e) {
-//            return ResponseDto.of(ResponseCode.UNAUTHORIZED);
-//        }
-
-        // 타입 추론( Type Inference )
+    @PostMapping("/logout")
+    public ResponseDto<UserDto> logOut(
+            @CookieValue(name = "userId", required = false) String userId,
+            HttpServletResponse response) {
+        Cookie cookieUser = new Cookie("userId", userId);
+        cookieUser.setMaxAge(0);
+        cookieUser.setPath("/");
+        response.addCookie(cookieUser);
+        return ResponseDto.of(ResponseCode.SUCCESS);
     }
 }

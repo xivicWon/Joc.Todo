@@ -96,8 +96,6 @@ class UserControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest());
-
-        // handler : UserController
     }
 
     @Test

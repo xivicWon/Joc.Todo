@@ -23,5 +23,5 @@ logging:
       SQL: DEBUG
       type: TRACE
       type.BasicTypeRegistry: INFO
-    jdbc:
+    jdbc: WARN
 #      resultset: DEBUG
