@@ -2,11 +2,10 @@ package com.joc.todo.controller.advice;
 
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseErrorDto;
+import com.joc.todo.exception.AuthenticationProblemException;
 import com.joc.todo.exception.LoginFailException;
-import com.joc.todo.exception.NoAuthenticationException;
 import com.joc.todo.type.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -37,10 +36,13 @@ public class TodoControllerAdvice {
         return ResponseEntity.internalServerError().body("ERROR");
     }
 
-    @ExceptionHandler({LoginFailException.class, NoAuthenticationException.class})
-    public ResponseEntity<?> loginProblemExceptionHandler(RuntimeException e) {
-        log.error("loginProblemExceptionHandler -> {} {}", e.getClass().getSimpleName(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("LogIn Fail");
+    @ExceptionHandler({LoginFailException.class, AuthenticationProblemException.class})
+    public ResponseEntity<?> authenticationProblemExceptionHandler(RuntimeException e) {
+        log.error("AuthenticationProblemException -> {} {}", e.getClass().getSimpleName(), e.getMessage());
+
+        ResponseErrorDto responseErrorDto = new ResponseErrorDto("", "", e.getMessage());
+        return ResponseDto.responseEntityOf(ResponseCode.UNAUTHORIZED, responseErrorDto);
+
     }
 
 }

@@ -5,12 +5,15 @@ import com.joc.todo.dto.TodoDto;
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.entity.Todo;
-import com.joc.todo.exception.NoAuthenticationException;
+import com.joc.todo.exception.InvalidUserProblemException;
+import com.joc.todo.exception.RequiredAuthenticationException;
 import com.joc.todo.mapper.TodoMapper;
 import com.joc.todo.service.TodoService;
+import com.joc.todo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,7 @@ public class TodoController {
 
     private static final String TEMP_USER_ID = "temp";
     private final TodoService todoService;
+    private final UserService userService;
     private final TodoMapper todoMapper;
     // http method : GET POST PUT PATCH DELETE OPTIONS HEAD TRACE CONNECT
 
@@ -52,7 +56,8 @@ public class TodoController {
     @GetMapping("/v2")
     public ResponseDto<List<TodoDto>> getTodoList(@CookieValue(name = "userId", required = false) String userId) {
         log.info(" cookie[0].userId => {}", userId);
-        return getRealTodoList(Optional.ofNullable(userId).orElseThrow(() -> new NoAuthenticationException("로그인을 하셔야 합니다.")));
+        validUserId(userId);
+        return getRealTodoList(userId);
     }
 
     private ResponseDto<List<TodoDto>> getRealTodoList(String userId) {
@@ -79,8 +84,11 @@ public class TodoController {
     }
 
     private void validUserId(String userId) {
-        if (userId == null)
-            throw new NoAuthenticationException("로그인을 하셔야 합니다.");
+        if (StringUtils.hasText(userId))
+            throw new RequiredAuthenticationException("로그인을 하셔야 합니다.");
+
+        if (!userService.existsUser(userId))
+            throw new InvalidUserProblemException("유효한 회원이 아닙니다.");
     }
 
 

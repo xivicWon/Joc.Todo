@@ -54,10 +54,16 @@ public class UserJpaEmRepository implements UserRepository {
                     .setParameter("email", email)
                     .setParameter("password", password)
                     .getSingleResult();
-            
+
             return Optional.ofNullable(user);
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<User> findById(String userId) {
+        User user = em.find(User.class, userId);
+        return Optional.ofNullable(user);
     }
 }

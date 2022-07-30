@@ -12,7 +12,10 @@ import com.joc.todo.type.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -66,9 +69,8 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseDto<UserDto> logOut(
-            @CookieValue(name = "userId", required = false) String userId,
             HttpServletResponse response) {
-        Cookie cookieUser = new Cookie("userId", userId);
+        Cookie cookieUser = new Cookie("userId", "");
         cookieUser.setMaxAge(0);
         cookieUser.setPath("/");
         response.addCookie(cookieUser);
