@@ -22,7 +22,7 @@ public class SessionManager {
         String sessionId = UUID.randomUUID().toString();
         sessionStore.put(sessionId, value);
 
-        Cookie cookie = new Cookie(SessionConst.SESSION_ID, sessionId);
+        Cookie cookie = new Cookie(SessionConst.SESSION_USER_KEY, sessionId);
         cookie.setPath("/");
 
         response.addCookie(cookie);
@@ -37,7 +37,7 @@ public class SessionManager {
     @NotNull
     private Optional<String> getSessionCookieId(HttpServletRequest request) {
         return Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[]{}))
-                .filter(cookie -> cookie.getName().equals(SessionConst.SESSION_ID))
+                .filter(cookie -> cookie.getName().equals(SessionConst.SESSION_USER_KEY))
                 .findFirst()
                 .map(Cookie::getValue);
     }

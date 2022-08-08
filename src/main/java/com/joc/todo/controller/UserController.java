@@ -1,6 +1,8 @@
 package com.joc.todo.controller;
 
 
+import com.joc.todo.controller.session.SessionConst;
+import com.joc.todo.controller.session.SessionManager;
 import com.joc.todo.dto.UserDto;
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Slf4j
 @RestController // Controller ResponseBody
@@ -28,6 +32,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final SessionManager sessionManager;
 
     @PostMapping(value = "/signup",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -51,8 +56,8 @@ public class UserController {
 
     }
 
-    @PostMapping("/login")
-    public ResponseDto<UserDto> logIn(
+    @PostMapping("/login/v1")
+    public ResponseDto<UserDto> logInV1(
             @RequestBody UserDto userDto,
             HttpServletResponse response
     ) {
@@ -67,13 +72,55 @@ public class UserController {
         return ResponseDto.of(ResponseCode.SUCCESS);
     }
 
-    @PostMapping("/logout")
-    public ResponseDto<UserDto> logOut(
+    @PostMapping("/login/v2")
+    public ResponseDto<UserDto> logInV2(
+            @RequestBody UserDto userDto,
+            HttpServletResponse response
+    ) {
+        String email = userDto.getEmail();
+        String password = userDto.getPassword();
+        User user = userService.logIn(email, password);
+        sessionManager.createSession(user, response);
+        return ResponseDto.of(ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/login/v3")
+    public ResponseDto<UserDto> logInV3(
+            @RequestBody UserDto userDto,
+            HttpServletRequest request
+    ) {
+        String email = userDto.getEmail();
+        String password = userDto.getPassword();
+        User user = userService.logIn(email, password);
+
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.SESSION_USER_KEY, user);
+        return ResponseDto.of(ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/logout/v1")
+    public ResponseDto<UserDto> logOutV1(
             HttpServletResponse response) {
         Cookie cookieUser = new Cookie("userId", "");
         cookieUser.setMaxAge(0);
         cookieUser.setPath("/");
         response.addCookie(cookieUser);
+        return ResponseDto.of(ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/logout/v2")
+    public ResponseDto<UserDto> logOutV2(
+            HttpServletRequest request) {
+        sessionManager.expireSession(request);
+        return ResponseDto.of(ResponseCode.SUCCESS);
+    }
+
+    @PostMapping("/logout/v3")
+    public ResponseDto<UserDto> logOutV3(
+            HttpServletRequest request) {
+        sessionManager.expireSession(request);
+        HttpSession session = request.getSession();
+        session.invalidate();
         return ResponseDto.of(ResponseCode.SUCCESS);
     }
 }

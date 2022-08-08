@@ -1,10 +1,13 @@
 package com.joc.todo.controller;
 
+import com.joc.todo.controller.session.SessionConst;
+import com.joc.todo.controller.session.SessionManager;
 import com.joc.todo.controller.validation.marker.TodoValidationGroup;
 import com.joc.todo.dto.TodoDto;
 import com.joc.todo.dto.response.ResponseDto;
 import com.joc.todo.dto.response.ResponseResultDto;
 import com.joc.todo.entity.Todo;
+import com.joc.todo.entity.User;
 import com.joc.todo.exception.InvalidUserProblemException;
 import com.joc.todo.exception.RequiredAuthenticationException;
 import com.joc.todo.mapper.TodoMapper;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +42,7 @@ public class TodoController {
     private final UserService userService;
     private final TodoMapper todoMapper;
     // http method : GET POST PUT PATCH DELETE OPTIONS HEAD TRACE CONNECT
+    private final SessionManager sessionManager;
 
 
     @GetMapping("/v1")
@@ -54,10 +59,39 @@ public class TodoController {
     }
 
     @GetMapping("/v2")
-    public ResponseDto<List<TodoDto>> getTodoList(@CookieValue(name = "userId", required = false) String userId) {
+    public ResponseDto<List<TodoDto>> getTodoListV2(@CookieValue(name = "userId", required = false) String userId) {
         log.info(" cookie[0].userId => {}", userId);
         validUserId(userId);
         return getRealTodoList(userId);
+    }
+
+
+    @GetMapping("/v3")
+    public ResponseDto<List<TodoDto>> getTodoListV3(HttpServletRequest request) {
+        User session = (User) sessionManager.getSession(request);
+        validUser(session);
+        return getRealTodoList(session.getId());
+    }
+
+    @GetMapping("/v4")
+    public ResponseDto<List<TodoDto>> getTodoListV4(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute(SessionConst.SESSION_USER_KEY);
+        validUser(user);
+        return getRealTodoList(user.getId());
+    }
+
+    @GetMapping("/v5")
+    public ResponseDto<List<TodoDto>> getTodoListV4(HttpSession session) {
+        User user = (User) session.getAttribute(SessionConst.SESSION_USER_KEY);
+        validUser(user);
+        return getRealTodoList(user.getId());
+    }
+
+    @GetMapping("/v6")
+    public ResponseDto<List<TodoDto>> getTodoListV4(@SessionAttribute(name = SessionConst.SESSION_USER_KEY, required = false) User loginUser) {
+        validUser(loginUser);
+        return getRealTodoList(loginUser.getId());
     }
 
     private ResponseDto<List<TodoDto>> getRealTodoList(String userId) {
@@ -67,6 +101,7 @@ public class TodoController {
         return ResponseDto.of(responseResultDto);
 
     }
+
 
     // R&R -> Role & Responsibility ( 역할과 책임 )
     @PostMapping(
@@ -84,11 +119,22 @@ public class TodoController {
     }
 
     private void validUserId(String userId) {
-        if (StringUtils.hasText(userId))
-            throw new RequiredAuthenticationException("로그인을 하셔야 합니다.");
+        if (!StringUtils.hasText(userId))
+            throwNoLogException();
 
         if (!userService.existsUser(userId))
             throw new InvalidUserProblemException("유효한 회원이 아닙니다.");
+    }
+
+    private void throwNoLogException() {
+        throw new RequiredAuthenticationException("로그인을 하셔야 합니다.");
+    }
+
+    private void validUser(User user) {
+        if (null == user) {
+            throwNoLogException();
+        }
+        validUserId(user.getId());
     }
 
 
