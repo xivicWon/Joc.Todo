@@ -76,20 +76,20 @@ public class TodoController {
     @GetMapping("/v4")
     public ResponseDto<List<TodoDto>> getTodoListV4(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute(SessionConst.SESSION_USER_KEY);
+        User user = (User) session.getAttribute(SessionConst.SESSION_USER);
         validUser(user);
         return getRealTodoList(user.getId());
     }
 
     @GetMapping("/v5")
     public ResponseDto<List<TodoDto>> getTodoListV4(HttpSession session) {
-        User user = (User) session.getAttribute(SessionConst.SESSION_USER_KEY);
+        User user = (User) session.getAttribute(SessionConst.SESSION_USER);
         validUser(user);
         return getRealTodoList(user.getId());
     }
 
     @GetMapping("/v6")
-    public ResponseDto<List<TodoDto>> getTodoListV4(@SessionAttribute(name = SessionConst.SESSION_USER_KEY, required = false) User loginUser) {
+    public ResponseDto<List<TodoDto>> getTodoListV4(@SessionAttribute(name = SessionConst.SESSION_USER, required = false) User loginUser) {
         validUser(loginUser);
         return getRealTodoList(loginUser.getId());
     }

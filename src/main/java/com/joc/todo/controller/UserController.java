@@ -94,7 +94,8 @@ public class UserController {
         User user = userService.logIn(email, password);
 
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.SESSION_USER_KEY, user);
+        session.setAttribute(SessionConst.SESSION_USER, user);
+//        session.setMaxInactiveInterval(5); //
         return ResponseDto.of(ResponseCode.SUCCESS);
     }
 
@@ -119,8 +120,10 @@ public class UserController {
     public ResponseDto<UserDto> logOutV3(
             HttpServletRequest request) {
         sessionManager.expireSession(request);
-        HttpSession session = request.getSession();
-        session.invalidate();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return ResponseDto.of(ResponseCode.SUCCESS);
     }
 }

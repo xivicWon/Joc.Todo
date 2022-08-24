@@ -30,12 +30,6 @@ public class TodoControllerAdvice {
         return ResponseDto.<String>responseEntityOf(ResponseCode.BAD_REQUEST, errors);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<?> globalExceptionHandler(Exception e) {
-        log.error("applicationExceptionHandler -> ", e);
-        return ResponseEntity.internalServerError().body("ERROR");
-    }
-
     @ExceptionHandler({LoginFailException.class, AuthenticationProblemException.class})
     public ResponseEntity<?> authenticationProblemExceptionHandler(RuntimeException e) {
         log.error("AuthenticationProblemException -> {} {}", e.getClass().getSimpleName(), e.getMessage());
@@ -45,4 +39,11 @@ public class TodoControllerAdvice {
 
     }
 
+
+    @ExceptionHandler
+    public ResponseEntity<?> globalExceptionHandler(Exception e) {
+        log.error("applicationExceptionHandler -> ", e);
+        ResponseErrorDto responseErrorDto = new ResponseErrorDto("", "", e.getMessage());
+        return ResponseDto.responseEntityOf(ResponseCode.INTERNAL_SERVER_ERROR, responseErrorDto);
+    }
 }

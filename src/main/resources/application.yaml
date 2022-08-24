@@ -1,6 +1,11 @@
 server:
   servlet:
     context-path: /service
+    session:
+      timeout: 60
+    #  cookie:
+    #    name: JAEHO_SESSION_ID
+
 spring:
   datasource:
     #    url: jdbc:h2:tcp://localhost/~/h2/todo
@@ -15,6 +20,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
 # Slf4j 로깅레벨 > TRACE > DEBUG > INFO > WARN > ERROR > FATAL
 logging:
   level:
