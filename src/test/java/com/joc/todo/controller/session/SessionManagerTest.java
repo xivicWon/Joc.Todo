@@ -1,6 +1,7 @@
 package com.joc.todo.controller.session;
 
-import com.joc.todo.entity.User;
+import com.joc.todo.data.entity.User;
+import com.joc.todo.web.controller.session.SessionManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;

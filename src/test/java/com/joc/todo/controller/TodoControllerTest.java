@@ -1,10 +1,11 @@
 package com.joc.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joc.todo.dto.TodoDto;
-import com.joc.todo.mapper.TodoMapper;
+import com.joc.todo.data.dto.TodoDto;
+import com.joc.todo.data.mapper.TodoMapper;
+import com.joc.todo.data.type.ResponseCode;
 import com.joc.todo.service.TodoService;
-import com.joc.todo.type.ResponseCode;
+import com.joc.todo.web.controller.TodoController;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -38,11 +39,11 @@ class TodoControllerTest {
     @MockBean
     TodoService todoService;
 
+    final String urlTemplate = "/todo/v7";
 
     @Test
     void createTodo() throws Exception {
         // Given
-        String urlTemplate = "/todo";
         TodoDto dto = TodoDto.builder().title("스프링 공부하기").build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
@@ -61,7 +62,6 @@ class TodoControllerTest {
     @ValueSource(strings = {" ", "\t"})
     void createTodoValidError(String title) throws Exception {
         // Given
-        String urlTemplate = "/todo";
         TodoDto dto = TodoDto.builder().title(title).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
@@ -79,7 +79,6 @@ class TodoControllerTest {
     @Test
     void updateTodo() throws Exception {
         // Given
-        String urlTemplate = "/todo";
         TodoDto dto = TodoDto.builder().id(1).title("스프링 공부하기").done(true).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
@@ -100,7 +99,6 @@ class TodoControllerTest {
     @CsvSource(value = {":자바:false", "1::false", "::true"}, delimiter = ':')
     void updateTodoValidError(Integer Id, String title, boolean done) throws Exception {
         // Given
-        String urlTemplate = "/todo";
 
         TodoDto dto = TodoDto.builder().id(Id).title(title).done(done).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
@@ -119,7 +117,6 @@ class TodoControllerTest {
     @Test
     void deleteTodo() throws Exception {
         // Given
-        String urlTemplate = "/todo";
         TodoDto dto = TodoDto.builder().id(1).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 
@@ -137,7 +134,6 @@ class TodoControllerTest {
     @NullSource
     void deleteTodoValidError(Integer Id) throws Exception {
         // Given
-        String urlTemplate = "/todo";
         TodoDto dto = TodoDto.builder().id(Id).build();
         String body = objectMapper.writeValueAsString(dto); // serialize : 객체 => Json String 으로 변환
 

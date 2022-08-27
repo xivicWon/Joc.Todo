@@ -1,6 +1,6 @@
 package com.joc.todo.repository;
 
-import com.joc.todo.entity.Todo;
+import com.joc.todo.data.entity.Todo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;

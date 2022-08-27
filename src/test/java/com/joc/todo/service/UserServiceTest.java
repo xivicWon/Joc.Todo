@@ -1,6 +1,6 @@
 package com.joc.todo.service;
 
-import com.joc.todo.entity.User;
+import com.joc.todo.data.entity.User;
 import com.joc.todo.exception.ApplicationException;
 import com.joc.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;

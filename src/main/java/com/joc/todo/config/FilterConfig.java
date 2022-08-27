@@ -1,8 +1,8 @@
 package com.joc.todo.config;
 
 
-import com.joc.todo.filter.LogFilter;
-import com.joc.todo.filter.LoginCheckFilter;
+import com.joc.todo.web.filter.LogFilter;
+import com.joc.todo.web.filter.LoginCheckFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 

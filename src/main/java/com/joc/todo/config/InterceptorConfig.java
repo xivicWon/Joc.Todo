@@ -1,9 +1,9 @@
 package com.joc.todo.config;
 
 
-import com.joc.todo.interceptor.LogInterceptor;
-import com.joc.todo.interceptor.LoginCheckInterceptor;
 import com.joc.todo.service.UserService;
+import com.joc.todo.web.interceptor.LogInterceptor;
+import com.joc.todo.web.interceptor.LoginCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

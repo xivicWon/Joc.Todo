@@ -1,6 +1,6 @@
 package com.joc.todo.repository;
 
-import com.joc.todo.entity.User;
+import com.joc.todo.data.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

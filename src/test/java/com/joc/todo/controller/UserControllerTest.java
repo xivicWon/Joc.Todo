@@ -1,12 +1,13 @@
 package com.joc.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joc.todo.dto.UserDto;
-import com.joc.todo.entity.User;
+import com.joc.todo.data.dto.UserDto;
+import com.joc.todo.data.entity.User;
+import com.joc.todo.data.mapper.UserMapper;
 import com.joc.todo.exception.ApplicationException;
 import com.joc.todo.exception.LoginFailException;
-import com.joc.todo.mapper.UserMapper;
 import com.joc.todo.service.UserService;
+import com.joc.todo.web.controller.UserController;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

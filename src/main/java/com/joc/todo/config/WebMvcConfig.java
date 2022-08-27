@@ -1,8 +1,12 @@
 package com.joc.todo.config;
 
+import com.joc.todo.web.argument.LoginUserArgumentResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration // @Component + 추가 기능 (BCI)
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -17,5 +21,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(MAX_AGE_SECOND);
+    }
+
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginUserArgumentResolver());
     }
 }
