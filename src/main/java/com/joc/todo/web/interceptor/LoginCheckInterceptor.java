@@ -7,6 +7,7 @@ import com.joc.todo.service.UserService;
 import com.joc.todo.web.controller.session.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -23,6 +24,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        if (HttpMethod.OPTIONS.matches(request.getMethod())) {
+            return true;
+        }
         String requestURI = request.getRequestURI();
         log.info("인증 체크 인터셉터 시작 = {}", requestURI);
 

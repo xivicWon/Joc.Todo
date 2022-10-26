@@ -27,13 +27,13 @@ public class LogInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        String method = request.getMethod();
         String requestURI = request.getRequestURI();
-        log.info("requestURI = {}", requestURI);
-
         String logId = UUID.randomUUID().toString();
         request.setAttribute(LOG_ID, logId);
-        log.info(">>> Request [{}] [{}]", logId, requestURI);
 
+        log.info(">>> RequestURI = {}", requestURI);
+        log.info(">>> Request [{}] [{}] [{}]", logId, method, requestURI);
         log.info(">>> Controller {}", handler);
 
         return true;
@@ -44,15 +44,16 @@ public class LogInterceptor implements HandlerInterceptor {
 
         String requestURI = request.getRequestURI();
         String logId = (String) request.getAttribute(LOG_ID);
-        log.info(">>> postHandle [{}] [{}]", logId, requestURI);
+        log.info(">>> PostHandle [{}] [{}]", logId, requestURI);
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
+        String method = request.getMethod();
         String requestURI = request.getRequestURI();
         String logId = (String) request.getAttribute(LOG_ID);
-        log.info(">>> afterCompletion [{}] [{}]", logId, requestURI);
+        log.info(">>> AfterCompletion [{}] [{}] [{}]", logId, method, requestURI);
 
     }
 
