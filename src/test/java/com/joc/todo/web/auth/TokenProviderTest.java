@@ -36,7 +36,9 @@ class TokenProviderTest {
     @Test
     @Order(2)
     void validateAndGetUserId() {
+
         create();
+
         String userId = tokenProvider.validateAndGetUserId(token);
 
         Assertions.assertThat(userId).isEqualTo(TEST_USER_ID);
